@@ -1,41 +1,30 @@
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(120deg, #1c6dd0, #0f9b8e);
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    margin: 0; padding: 0;
+    font-family: sans-serif;
+    background: #f0f4f8;
+    display: flex; justify-content: center; align-items: center; min-height: 100vh;
 }
-
+.main-title {
+    text-align: center; color: #2c3e50; font-weight: 900; margin-bottom: 20px;
+}
 .card {
-  background: #fff;
-  padding: 30px;
-  width: 90%;
-  max-width: 420px;
-  border-radius: 12px;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    background: #fff; width: 350px; padding: 25px; border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 6px solid #2ecc71;
 }
-
-h1 {
-  text-align: center;
-  color: #1c6dd0;
+.drop-zone {
+    border: 2px dashed #3498db; padding: 30px; text-align: center;
+    border-radius: 8px; cursor: pointer; color: #3498db; margin-bottom: 20px;
 }
-
-input, select, button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 12px;
-  font-size: 16px;
+.field label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+select {
+    width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 20px;
 }
-
 button {
-  background: #0f9b8e;
-  color: white;
-  border: none;
-  border-radius: 6px;
+    width: 100%; background: #2ecc71; color: white; border: none; padding: 12px;
+    border-radius: 5px; font-weight: bold; cursor: pointer;
 }
-
-button:hover {
-  background: #0b7d72;
-}
+#result { margin-top: 20px; text-align: center; }
+#outputUrl { width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ccc; }
+.btn-group { display: flex; gap: 10px; }
+.btn-group button { background: #3498db; }
+.hidden { display: none; }
