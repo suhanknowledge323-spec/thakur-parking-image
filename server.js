@@ -1,65 +1,53 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
-const cors = require("cors");
+const mongoose = require("mongoose");
+require("dotenv").config();
 
 const app = express();
-app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => console.log("MongoDB connected"))
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err));
 
 const ImageSchema = new mongoose.Schema({
   url: String,
-  publicId: String,
-  expireAt: Date
+  expiresAt: Date,
 });
-
 const Image = mongoose.model("Image", ImageSchema);
 
-const upload = multer({ dest: "uploads/" });
-
-function getExpireDate(value) {
-  if (value === "permanent") return null;
-  const d = new Date();
-  d.setDate(d.getDate() + parseInt(value));
-  return d;
-}
+const storage = multer.diskStorage({});
+const upload = multer({ storage });
 
 app.post("/upload", upload.single("image"), async (req, res) => {
   try {
     const result = await cloudinary.uploader.upload(req.file.path);
-    const expireAt = getExpireDate(req.body.expiry);
 
-    const img = await Image.create({
+    let expiresAt = null;
+    if (req.body.duration !== "permanent") {
+      expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + Number(req.body.duration));
+    }
+
+    await Image.create({
       url: result.secure_url,
-      publicId: result.public_id,
-      expireAt
+      expiresAt,
     });
 
-    res.json({ link: `/img/${img._id}` });
-  } catch (e) {
-    res.status(500).json({ error: "Upload failed" });
+    res.json({ message: "✅ Image uploaded successfully!" });
+  } catch (err) {
+    res.status(500).json({ message: "❌ Upload failed" });
   }
 });
 
-app.get("/img/:id", async (req, res) => {
-  const img = await Image.findById(req.params.id);
-  if (!img) return res.send("Image expired or deleted");
-  res.redirect(img.url);
-});
-
-app.listen(process.env.PORT || 3000, () =>
-  console.log("Server running")
-);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log("Server running on port", PORT));
